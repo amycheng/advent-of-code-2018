@@ -154,8 +154,9 @@ for(let [coord, point] of grid){
   if (notInfinite.has(point)) {
     if (!counts[point]) {
       counts[point]=1;
+    } else {
+      counts[point]=counts[point]+1;
     }
-    counts[point]=counts[point]+1;
   }
 }
 // console.log(counts);
@@ -173,7 +174,6 @@ Object.keys(counts).forEach((val)=>{
   return grid;
 }
 
-//TODO: for some reason the correct answer is 1 less than the output??
 createMap(input);
 
 // TODO: knock out any infinite coordinates, those that are alone along the edge

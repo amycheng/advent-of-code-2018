@@ -75,7 +75,7 @@ for ( var coord of input) {
     highestY = y;
   }
 }
-return [highestX,highestY];
+return [highestX+1,highestY+1];
 }
 
 // copied pasta'd from https://github.com/semibran/manhattan
@@ -92,8 +92,10 @@ function createMap(input){
   let grid = new Map();
   const bounds = calcBounds(input);
   let interator=0;
-  for (var i = bounds[0] - 1; i >= 0; i--) {
-    for (var j = bounds[1] - 1; j >= 0; j--) {
+ let infinite = new Set();
+
+  for (var i = bounds[0]; i >= 0; i--) {
+    for (var j = bounds[1]; j >= 0; j--) {
       var coordinates = `${i},${j}`;
       var shortestDist = 0;
       var winner="";
@@ -111,20 +113,65 @@ function createMap(input){
           }
 
           if (dist === shortestDist && winner !== point) {
-            winner = winner + ',' + point;
+            winner = winner + ';' + point;
           }
         }
        } //END FOR LOOP
+       if (winner.split(';').length===1) {
+       grid.set(coordinates,winner);
+       }
+      if ((i===0 || j===0) && winner.split(';').length===1) {
+        infinite.add(winner);
+       }
+      if ((i=== bounds[0]|| j=== bounds[1]) && winner.split(';').length===1) {
+        infinite.add(winner);
+       }
+      //  console.log(infinite);
 
-       grid[coordinates]=winner;
+      // if (!infinite.has(winner) && i > 0  && j > 0 && j < bounds[1]-1 && i < bounds[0]-1 && winner.split(';').length===1) {
+      //   grid[coordinates]=winner;
+      // }
 
     }
   }
   //WARNING: large json objects hog memory
-  console.log(grid);
+  // console.log(grid);
+  let notInfinite = new Set();
+  input.forEach((val)=>{
+    if (!infinite.has(`[${val}]`)) {
+      notInfinite.add(`[${val}]`);
+    }
+  });
+
+// console.log(grid);
+// console.log(notInfinite);
+// console.log(typeof grid);
+
+var counts = {
+
+};
+for(let [coord, point] of grid){
+  if (notInfinite.has(point)) {
+    if (!counts[point]) {
+      counts[point]=1;
+    }
+    counts[point]=counts[point]+1;
+  }
+}
+// console.log(counts);
+let foo = 0;
+let answer = '';
+Object.keys(counts).forEach((val)=>{
+  if (counts[val] > foo) {
+    foo = counts[val];
+    answer = val;
+  }
+});
+  console.log(foo);
+  console.log(answer);
+
   return grid;
 }
-
 
 
 createMap(input);
